@@ -23,6 +23,7 @@ struct ManagerView: View {
                 }
             }
             .pickerStyle(.segmented)
+            .labelsHidden()
             .accessibilityLabel("语录管理页面")
 
             Group {

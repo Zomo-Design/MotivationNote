@@ -1,6 +1,8 @@
 import AppKit
 
 enum WindowBehavior {
+    static let hidesOnDeactivate = false
+
     static func level(
         alwaysOnTop: Bool
     ) -> NSWindow.Level {

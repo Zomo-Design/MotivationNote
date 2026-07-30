@@ -6,6 +6,7 @@ enum WindowBehaviorChecks {
         runCheckSuite("WindowBehavior", checks: [
             regularModeUsesNormalWindowLevel,
             alwaysOnTopUsesFloatingLevel,
+            noteDoesNotHideWhenAnotherAppBecomesActive,
             draggingIsClampedToVisibleScreen
         ])
     }
@@ -21,6 +22,13 @@ enum WindowBehaviorChecks {
         try expect(
             WindowBehavior.level(alwaysOnTop: true) == .floating,
             "Pinned note must use floating window level"
+        )
+    }
+
+    private static func noteDoesNotHideWhenAnotherAppBecomesActive() throws {
+        try expect(
+            !WindowBehavior.hidesOnDeactivate,
+            "Desktop note must remain visible when another app becomes active"
         )
     }
 

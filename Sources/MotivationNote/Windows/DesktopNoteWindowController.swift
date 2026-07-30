@@ -37,6 +37,8 @@ final class DesktopNoteWindowController:
         panel.hasShadow = false
         panel.isMovableByWindowBackground = true
         panel.becomesKeyOnlyIfNeeded = true
+        panel.hidesOnDeactivate =
+            WindowBehavior.hidesOnDeactivate
         panel.collectionBehavior = [
             .canJoinAllSpaces,
             .stationary,

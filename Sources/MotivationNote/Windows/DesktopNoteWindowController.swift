@@ -1,6 +1,5 @@
 import AppKit
 import Combine
-import CoreGraphics
 import SwiftUI
 
 @MainActor
@@ -77,13 +76,9 @@ final class DesktopNoteWindowController:
     }
 
     private func updateLevel(alwaysOnTop: Bool) {
-        window?.level = alwaysOnTop
-            ? .floating
-            : NSWindow.Level(
-                rawValue: Int(
-                    CGWindowLevelForKey(.desktopIconWindow)
-                ) - 1
-            )
+        window?.level = WindowBehavior.level(
+            alwaysOnTop: alwaysOnTop
+        )
     }
 
     private func restorePosition() {
@@ -104,36 +99,28 @@ final class DesktopNoteWindowController:
             x: visible.maxX - noteWidth - 36,
             y: visible.maxY - window.frame.height - 36
         )
-        window.setFrameOrigin(
-            clamped(
-                proposed,
-                windowSize: window.frame.size
-            )
+        let safeOrigin = WindowBehavior.clampedOrigin(
+            proposed,
+            windowSize: window.frame.size,
+            visibleFrame: visible
         )
+        window.setFrameOrigin(safeOrigin)
     }
 
-    private func clamped(
-        _ origin: NSPoint,
-        windowSize: NSSize
-    ) -> NSPoint {
+    private func visibleFrame(
+        for origin: NSPoint
+    ) -> NSRect {
         let screen = NSScreen.screens.first {
             $0.visibleFrame.contains(origin)
         } ?? NSScreen.main
 
-        guard let visible = screen?.visibleFrame else {
-            return origin
-        }
-
-        return NSPoint(
-            x: min(
-                max(origin.x, visible.minX),
-                visible.maxX - windowSize.width
-            ),
-            y: min(
-                max(origin.y, visible.minY),
-                visible.maxY - windowSize.height
+        return screen?.visibleFrame
+            ?? NSRect(
+                x: 0,
+                y: 0,
+                width: 1440,
+                height: 900
             )
-        )
     }
 
     private func resize(to requestedHeight: CGFloat) {
@@ -155,9 +142,10 @@ final class DesktopNoteWindowController:
             height: height
         )
         frame.origin.y = top - height
-        frame.origin = clamped(
+        frame.origin = WindowBehavior.clampedOrigin(
             frame.origin,
-            windowSize: frame.size
+            windowSize: frame.size,
+            visibleFrame: visibleFrame(for: frame.origin)
         )
 
         guard
@@ -177,17 +165,58 @@ final class DesktopNoteWindowController:
     }
 
     func windowDidMove(_ notification: Notification) {
-        guard let origin = window?.frame.origin else {
+        guard let window else {
+            return
+        }
+
+        let origin = window.frame.origin
+        let safeOrigin = WindowBehavior.clampedOrigin(
+            origin,
+            windowSize: window.frame.size,
+            visibleFrame: visibleFrame(for: origin)
+        )
+        if safeOrigin != origin {
+            window.setFrameOrigin(safeOrigin)
             return
         }
 
         let position = WindowPosition(
-            x: origin.x,
-            y: origin.y
+            x: safeOrigin.x,
+            y: safeOrigin.y
         )
         guard model.data.windowPosition != position else {
             return
         }
         model.setWindowPosition(position)
+    }
+
+    func bringBackToVisibleScreen() {
+        guard let window else {
+            return
+        }
+
+        let visible = NSScreen.main?.visibleFrame
+            ?? NSRect(
+                x: 0,
+                y: 0,
+                width: 1440,
+                height: 900
+            )
+        var frame = window.frame
+        frame.origin = NSPoint(
+            x: visible.maxX - frame.width - 36,
+            y: visible.maxY - frame.height - 36
+        )
+        frame.origin = WindowBehavior.clampedOrigin(
+            frame.origin,
+            windowSize: frame.size,
+            visibleFrame: visible
+        )
+        window.setFrame(
+            frame,
+            display: true,
+            animate: false
+        )
+        window.orderFrontRegardless()
     }
 }

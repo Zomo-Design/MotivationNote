@@ -9,6 +9,7 @@ source_files=(
   "$project_dir"/Sources/MotivationNote/Models/*.swift(N)
   "$project_dir"/Sources/MotivationNote/Persistence/*.swift(N)
   "$project_dir"/Sources/MotivationNote/State/*.swift(N)
+  "$project_dir"/Sources/MotivationNote/Windows/WindowBehavior.swift(N)
 )
 
 for check_file in "$project_dir"/Tests/Checks/*Checks.swift(N); do

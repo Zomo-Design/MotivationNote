@@ -41,6 +41,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     @objc
+    private func bringBackNote() {
+        desktopController.bringBackToVisibleScreen()
+    }
+
+    @objc
     private func quit() {
         NSApp.terminate(nil)
     }
@@ -55,6 +60,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             withTitle: "打开语录管理",
             action: #selector(showManager),
             keyEquivalent: ","
+        )
+        appMenu.addItem(
+            withTitle: "找回桌面便签",
+            action: #selector(bringBackNote),
+            keyEquivalent: "r"
         )
         appMenu.addItem(.separator())
         appMenu.addItem(

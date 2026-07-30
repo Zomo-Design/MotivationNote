@@ -1,0 +1,6 @@
+.superpowers/
+.tmp-tasks-board/
+.DS_Store
+.build/
+DerivedData/
+*.xcuserstate

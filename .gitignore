@@ -1,5 +1,6 @@
 .superpowers/
 .tmp-tasks-board/
+.worktrees/
 .DS_Store
 .build/
 DerivedData/

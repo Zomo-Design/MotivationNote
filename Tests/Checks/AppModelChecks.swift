@@ -29,6 +29,7 @@ enum AppModelChecks {
         runCheckSuite("AppModel", checks: [
             emptyTextCannotBeAdded,
             addUpdateAndDeletePersistEveryMutation,
+            deletingAllQuotesLeavesSafeEmptyState,
             selectedQuotesKeepExplicitOrderAndCanBeEmpty,
             appearanceAndWindowSettingsPersist,
             corruptLoadUsesSeedAndReportsRecovery
@@ -89,6 +90,25 @@ enum AppModelChecks {
         model.setSelected(false, quoteID: secondID)
         model.setSelected(false, quoteID: firstID)
         try expect(model.selectedQuotes.isEmpty, "Selection may be empty")
+    }
+
+    private static func deletingAllQuotesLeavesSafeEmptyState() throws {
+        let store = MemoryStore(stored: .seeded)
+        let model = AppModel(store: store)
+
+        for quote in model.data.quotes {
+            model.deleteQuote(id: quote.id)
+        }
+
+        try expect(model.data.quotes.isEmpty, "Library should become empty")
+        try expect(
+            model.selectedQuotes.isEmpty,
+            "Selected quotes should become empty"
+        )
+        try expect(
+            store.stored?.quotes.isEmpty == true,
+            "Empty library should persist"
+        )
     }
 
     private static func appearanceAndWindowSettingsPersist() throws {

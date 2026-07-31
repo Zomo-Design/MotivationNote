@@ -29,21 +29,10 @@ struct QuoteLibraryView: View {
                 }
             )
         }
-        .alert(
-            "确定删除这句语录吗？",
-            isPresented: deleteAlertBinding,
-            presenting: deleteCandidate
-        ) { quote in
-            Button("删除", role: .destructive) {
-                model.deleteQuote(id: quote.id)
-                deleteCandidate = nil
-            }
-            Button("取消", role: .cancel) {
-                deleteCandidate = nil
-            }
-        } message: { quote in
-            Text(quote.text)
-        }
+        .quoteDeleteConfirmation(
+            candidate: $deleteCandidate,
+            onDelete: { model.deleteQuote(id: $0.id) }
+        )
     }
 
     private var quoteList: some View {
@@ -73,6 +62,7 @@ struct QuoteLibraryView: View {
                     deleteCandidate = quote
                 } label: {
                     Image(systemName: "trash")
+                        .foregroundStyle(.red)
                 }
                 .buttonStyle(.borderless)
                 .accessibilityLabel(
@@ -80,18 +70,19 @@ struct QuoteLibraryView: View {
                 )
             }
             .padding(.vertical, 7)
-        }
-        .listStyle(.inset)
-    }
-
-    private var deleteAlertBinding: Binding<Bool> {
-        Binding(
-            get: { deleteCandidate != nil },
-            set: {
-                if !$0 {
-                    deleteCandidate = nil
+            .contextMenu {
+                Button {
+                    editingQuote = quote
+                } label: {
+                    Label("编辑语录", systemImage: "pencil")
+                }
+                Button(role: .destructive) {
+                    deleteCandidate = quote
+                } label: {
+                    Label("删除语录", systemImage: "trash")
                 }
             }
-        )
+        }
+        .listStyle(.inset)
     }
 }

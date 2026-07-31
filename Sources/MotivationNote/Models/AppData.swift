@@ -17,7 +17,7 @@ struct AppData: Codable, Equatable, Sendable {
         paperColor: PaperColor = .warmYellow,
         paperTexture: PaperTexture = .lined,
         windowPosition: WindowPosition? = nil,
-        alwaysOnTop: Bool = true,
+        alwaysOnTop: Bool = false,
         schemaVersion: Int = currentSchemaVersion
     ) {
         self.quotes = quotes

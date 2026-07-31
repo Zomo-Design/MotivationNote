@@ -1,5 +1,4 @@
 import AppKit
-import Combine
 import SwiftUI
 
 @MainActor
@@ -9,7 +8,6 @@ final class DesktopNoteWindowController:
 {
     private let model: AppModel
     private let noteWidth: CGFloat = 304
-    private var cancellables = Set<AnyCancellable>()
 
     init(
         model: AppModel,
@@ -39,6 +37,7 @@ final class DesktopNoteWindowController:
         panel.becomesKeyOnlyIfNeeded = true
         panel.hidesOnDeactivate =
             WindowBehavior.hidesOnDeactivate
+        panel.level = WindowBehavior.desktopNoteLevel
         panel.collectionBehavior = [
             .canJoinAllSpaces,
             .stationary,
@@ -56,30 +55,13 @@ final class DesktopNoteWindowController:
             )
         )
 
-        updateLevel(alwaysOnTop: model.data.alwaysOnTop)
         restorePosition()
-
-        model.$data
-            .map { $0.alwaysOnTop }
-            .removeDuplicates()
-            .sink { [weak self] alwaysOnTop in
-                self?.updateLevel(
-                    alwaysOnTop: alwaysOnTop
-                )
-            }
-            .store(in: &cancellables)
     }
 
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError(
             "DesktopNoteWindowController only supports programmatic creation"
-        )
-    }
-
-    private func updateLevel(alwaysOnTop: Bool) {
-        window?.level = WindowBehavior.level(
-            alwaysOnTop: alwaysOnTop
         )
     }
 

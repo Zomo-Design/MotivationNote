@@ -4,7 +4,7 @@
 
 **Goal:** 将桌面纸张宽度增加到 `350pt`，并在“今日展示”和“全部语录”中提供清晰、安全、统一的删除入口。
 
-**Architecture:** `WindowBehavior` 作为 SwiftUI 与 AppKit 共享的唯一尺寸来源，避免纸张和窗口宽度不一致。新增可复用的 SwiftUI 删除确认修饰器，两个管理页面只负责选择删除候选，最终仍调用现有的 `AppModel.deleteQuote(id:)`。
+**Architecture:** 桌面便签固定使用 AppKit 的普通窗口层级，让当前应用窗口自然覆盖它，同时保留失焦可见行为。`WindowBehavior` 作为 SwiftUI 与 AppKit 共享的唯一尺寸来源，避免纸张和窗口宽度不一致。新增可复用的 SwiftUI 删除确认修饰器，两个管理页面只负责选择删除候选，最终仍调用现有的 `AppModel.deleteQuote(id:)`。
 
 **Tech Stack:** Swift 6.0、SwiftUI、AppKit、自包含 Swift checks、macOS 14+
 
@@ -16,7 +16,103 @@
 - 全部语录必须支持明显的危险操作按钮、右键编辑与右键删除。
 - 所有删除操作必须先显示原生确认弹窗。
 - 取消删除不能改变数据；确认删除继续使用 `AppModel.deleteQuote(id:)`。
+- 桌面便签不得浮在普通应用窗口上方。
+- 切换应用后，如果没有窗口遮挡，桌面便签仍须保持可见。
 - 应用保持完全离线，不添加第三方依赖。
+
+---
+
+### Task 0: 修复桌面便签错误置顶
+
+**Root cause:**
+
+- 当前持久化数据中的 `alwaysOnTop` 为 `true`。
+- `WindowBehavior.level(alwaysOnTop: true)` 返回 `.floating`。
+- `DesktopNoteWindowController` 将该层级应用到面板，因此普通应用窗口无法覆盖便签。
+
+**Files:**
+- Modify: `Tests/Checks/WindowBehaviorChecks.swift`
+- Modify: `Tests/Checks/AppDataChecks.swift`
+- Modify: `Sources/MotivationNote/Windows/WindowBehavior.swift`
+- Modify: `Sources/MotivationNote/Windows/DesktopNoteWindowController.swift`
+- Modify: `Sources/MotivationNote/Views/Manager/AppearanceSettingsView.swift`
+- Modify: `Sources/MotivationNote/Models/AppData.swift`
+
+**Interfaces:**
+- Produces: `WindowBehavior.desktopNoteLevel: NSWindow.Level`
+- Preserves: `WindowBehavior.hidesOnDeactivate == false`
+- Retains: `AppData.alwaysOnTop` 仅用于兼容读取已有数据
+
+- [ ] **Step 1: 写窗口层级失败检查**
+
+将 `WindowBehaviorChecks` 中的两项动态层级检查替换为：
+
+```swift
+private static func desktopNoteUsesNormalWindowLevel() throws {
+    try expect(
+        WindowBehavior.desktopNoteLevel == .normal,
+        "Normal application windows must cover the desktop note"
+    )
+}
+```
+
+将 `AppDataChecks` 中的默认值期望改为：
+
+```swift
+try expect(
+    !data.alwaysOnTop,
+    "Legacy pin state should default to disabled"
+)
+```
+
+- [ ] **Step 2: 运行检查并确认新接口尚不存在**
+
+Run: `./scripts/run-checks.sh`
+
+Expected: FAIL，错误包含 `type 'WindowBehavior' has no member 'desktopNoteLevel'`。
+
+- [ ] **Step 3: 固定普通窗口层级并移除置顶入口**
+
+在 `WindowBehavior` 中用以下常量替换 `level(alwaysOnTop:)`：
+
+```swift
+static let desktopNoteLevel = NSWindow.Level.normal
+```
+
+在 `DesktopNoteWindowController` 中：
+
+- 移除 `Combine`、`cancellables` 和 `alwaysOnTop` 订阅。
+- 初始化面板时直接设置：
+
+```swift
+panel.level = WindowBehavior.desktopNoteLevel
+```
+
+在 `AppearanceSettingsView` 中移除“始终置顶”开关及其视图属性。将 `AppData` 的 `alwaysOnTop` 默认值改回 `false`；字段本身保留，保证当前用户数据仍可解码，但不再影响窗口层级。
+
+- [ ] **Step 4: 验证窗口行为**
+
+Run:
+
+```bash
+./scripts/run-checks.sh
+swift build
+```
+
+Expected: checks 全部 PASS；Swift build 成功。
+
+- [ ] **Step 5: 提交窗口层级修复**
+
+```bash
+git add Tests/Checks/WindowBehaviorChecks.swift \
+  Tests/Checks/AppDataChecks.swift \
+  Sources/MotivationNote/Windows/WindowBehavior.swift \
+  Sources/MotivationNote/Windows/DesktopNoteWindowController.swift \
+  Sources/MotivationNote/Views/Manager/AppearanceSettingsView.swift \
+  Sources/MotivationNote/Models/AppData.swift \
+  docs/superpowers/plans/2026-07-31-quote-delete-and-wide-note.md
+git commit -m "fix: let normal windows cover desktop note"
+```
 
 ---
 
@@ -114,7 +210,7 @@ Run:
 swift build
 ```
 
-Expected: `WindowBehavior (5 checks)` PASS；Swift build 成功。
+Expected: `WindowBehavior (4 checks)` PASS；Swift build 成功。
 
 - [ ] **Step 5: 提交加宽改动**
 

@@ -1,13 +1,8 @@
 import AppKit
 
 enum WindowBehavior {
+    static let desktopNoteLevel = NSWindow.Level.normal
     static let hidesOnDeactivate = false
-
-    static func level(
-        alwaysOnTop: Bool
-    ) -> NSWindow.Level {
-        alwaysOnTop ? .floating : .normal
-    }
 
     static func clampedOrigin(
         _ origin: NSPoint,

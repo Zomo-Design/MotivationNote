@@ -9,7 +9,6 @@ struct AppearanceSettingsView: View {
                 preview
                 colorPicker
                 texturePicker
-                alwaysOnTopToggle
             }
             .padding()
         }
@@ -126,20 +125,6 @@ struct AppearanceSettingsView: View {
             }
             .padding(8)
         }
-    }
-
-    private var alwaysOnTopToggle: some View {
-        Toggle(
-            "始终置顶",
-            isOn: Binding(
-                get: { model.data.alwaysOnTop },
-                set: { model.setAlwaysOnTop($0) }
-            )
-        )
-        .toggleStyle(.switch)
-        .accessibilityHint(
-            "开启后便签会显示在普通应用窗口上方"
-        )
     }
 
     private var previewQuotes: [Quote] {

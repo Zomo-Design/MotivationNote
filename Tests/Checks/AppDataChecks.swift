@@ -23,7 +23,10 @@ enum AppDataChecks {
         )
         try expect(data.paperColor == .warmYellow, "Default color should be warm yellow")
         try expect(data.paperTexture == .lined, "Default texture should be lined")
-        try expect(data.alwaysOnTop, "Desktop note should be pinned by default")
+        try expect(
+            !data.alwaysOnTop,
+            "Legacy pin state should default to disabled"
+        )
     }
 
     private static func repairReferencesRemovesMissingAndDuplicateIDs() throws {

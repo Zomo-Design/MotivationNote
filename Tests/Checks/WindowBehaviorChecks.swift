@@ -4,24 +4,16 @@ import AppKit
 enum WindowBehaviorChecks {
     static func main() {
         runCheckSuite("WindowBehavior", checks: [
-            regularModeUsesNormalWindowLevel,
-            alwaysOnTopUsesFloatingLevel,
+            desktopNoteUsesNormalWindowLevel,
             noteDoesNotHideWhenAnotherAppBecomesActive,
             draggingIsClampedToVisibleScreen
         ])
     }
 
-    private static func regularModeUsesNormalWindowLevel() throws {
+    private static func desktopNoteUsesNormalWindowLevel() throws {
         try expect(
-            WindowBehavior.level(alwaysOnTop: false) == .normal,
-            "Regular note must stay above the desktop window layer"
-        )
-    }
-
-    private static func alwaysOnTopUsesFloatingLevel() throws {
-        try expect(
-            WindowBehavior.level(alwaysOnTop: true) == .floating,
-            "Pinned note must use floating window level"
+            WindowBehavior.desktopNoteLevel == .normal,
+            "Normal application windows must cover the desktop note"
         )
     }
 

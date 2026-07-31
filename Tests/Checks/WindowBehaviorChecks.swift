@@ -6,6 +6,7 @@ enum WindowBehaviorChecks {
         runCheckSuite("WindowBehavior", checks: [
             desktopNoteUsesNormalWindowLevel,
             noteDoesNotHideWhenAnotherAppBecomesActive,
+            noteUsesApprovedWidth,
             draggingIsClampedToVisibleScreen
         ])
     }
@@ -24,6 +25,17 @@ enum WindowBehaviorChecks {
         )
     }
 
+    private static func noteUsesApprovedWidth() throws {
+        try expect(
+            WindowBehavior.paperContentWidth == 350,
+            "Paper content width should be 350pt"
+        )
+        try expect(
+            WindowBehavior.noteWindowWidth == 374,
+            "Window width should include 12pt on each side"
+        )
+    }
+
     private static func draggingIsClampedToVisibleScreen() throws {
         let visible = NSRect(
             x: 0,
@@ -31,7 +43,10 @@ enum WindowBehaviorChecks {
             width: 1728,
             height: 1010
         )
-        let size = NSSize(width: 304, height: 360)
+        let size = NSSize(
+            width: WindowBehavior.noteWindowWidth,
+            height: 360
+        )
 
         let tooFarLeft = WindowBehavior.clampedOrigin(
             NSPoint(x: -900, y: 500),
@@ -55,7 +70,7 @@ enum WindowBehaviorChecks {
         )
 
         try expect(tooFarLeft.x == 0, "Left edge should be clamped")
-        try expect(tooFarRight.x == 1424, "Right edge should be clamped")
+        try expect(tooFarRight.x == 1354, "Right edge should be clamped")
         try expect(tooHigh.y == 724, "Top edge should be clamped")
         try expect(tooLow.y == 74, "Bottom edge should be clamped")
     }

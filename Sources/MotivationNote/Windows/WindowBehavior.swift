@@ -1,6 +1,10 @@
 import AppKit
 
 enum WindowBehavior {
+    static let paperContentWidth: CGFloat = 350
+    static let windowHorizontalInset: CGFloat = 12
+    static let noteWindowWidth =
+        paperContentWidth + windowHorizontalInset * 2
     static let desktopNoteLevel = NSWindow.Level.normal
     static let hidesOnDeactivate = false
 

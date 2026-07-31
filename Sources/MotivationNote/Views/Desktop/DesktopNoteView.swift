@@ -16,7 +16,7 @@ struct DesktopNoteView: View {
             }
         }
         .padding(22)
-        .frame(width: 280)
+        .frame(width: WindowBehavior.paperContentWidth)
         .frame(maxHeight: 720)
         .foregroundStyle(model.data.paperColor.textColor)
         .background {
@@ -28,7 +28,7 @@ struct DesktopNoteView: View {
         .fixedSize(horizontal: false, vertical: true)
         .rotationEffect(.degrees(-0.7))
         .padding(12)
-        .frame(width: 304)
+        .frame(width: WindowBehavior.noteWindowWidth)
         .background(sizeReader)
         .accessibilityElement(children: .contain)
     }

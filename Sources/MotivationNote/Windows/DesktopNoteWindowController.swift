@@ -7,7 +7,7 @@ final class DesktopNoteWindowController:
     NSWindowDelegate
 {
     private let model: AppModel
-    private let noteWidth: CGFloat = 304
+    private let noteWidth = WindowBehavior.noteWindowWidth
 
     init(
         model: AppModel,
@@ -19,7 +19,7 @@ final class DesktopNoteWindowController:
             contentRect: NSRect(
                 x: 0,
                 y: 0,
-                width: 304,
+                width: WindowBehavior.noteWindowWidth,
                 height: 360
             ),
             styleMask: [.borderless],

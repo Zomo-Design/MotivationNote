@@ -1,33 +1,66 @@
-# 激励便签
+# MotivationNote · 激励便签
 
-一个完全离线的 macOS 桌面便签，用来收藏激励语录，并挑选今天想看到的一句或多句。
+A private, offline-first motivational note for the macOS desktop. Save quotes,
+choose what you want to see today, reorder them, and customize the paper — with
+no account, analytics, or network access.
 
-## 构建与启动
+一款完全离线的 macOS 桌面激励便签：收藏语录、选择今日展示内容、拖动排序并自定义纸张外观。无需账号，不收集数据，也不会联网。
 
-需要 macOS 14 或更高版本，以及 Apple Swift 6 工具链。
+## Why this project
+
+Most note apps live inside a window. MotivationNote stays quietly on the desktop
+and is naturally covered by normal app windows, so it is visible when useful
+without becoming distracting. User data is stored locally as readable JSON and
+written atomically.
+
+## Features
+
+- Native SwiftUI/AppKit app for macOS 14+
+- Multiple quotes on the desktop with drag-to-reorder
+- Quote creation, editing, selection, and confirmed deletion
+- Custom paper colors and textures
+- Desktop-aware window behavior and a “Find Desktop Note” command
+- Offline-only storage; no telemetry or external services
+- Dependency-free Swift package with executable behavior checks
+
+## Build and run
+
+Requirements: macOS 14 or later, Xcode 16 or a Swift 6 toolchain.
 
 ```bash
+git clone https://github.com/nuonuostyjo-design/MotivationNote.git
+cd MotivationNote
+./scripts/run-checks.sh
 ./scripts/build-app.sh
+open "dist/激励便签.app"
 ```
 
-构建完成后，双击 `dist/激励便签.app`。
+The build script creates an ad-hoc signed app bundle at `dist/激励便签.app`.
+Because the app is not notarized, macOS may ask you to allow it in
+**System Settings → Privacy & Security**.
 
-如果 macOS 提示无法验证开发者，请打开“系统设置 → 隐私与安全性”，找到对应提示并选择“仍要打开”。
-
-## 使用
+## 使用方法
 
 - 首次启动会显示三条示例语录，桌面便签默认展示第一条。
 - 点击便签右上角的“•••”打开“我的激励语录”。
 - 点击“新增语录”收藏一句话。
-- 在“今日展示”中勾选任意数量的语录。
-- 拖动已选语录可以调整桌面顺序。
-- 在“今日展示”或“全部语录”中点击垃圾桶，确认后可永久删除已有语录。
-- 右键任意语录也可以选择“删除语录”。
-- 在“全部语录”中可以编辑已经收藏的内容。
+- 在“今日展示”中勾选任意数量的语录，并拖动调整顺序。
+- 在“全部语录”中编辑内容，或通过垃圾桶/右键菜单删除语录。
 - 在“纸张外观”中组合不同的颜色和纹理。
-- 普通应用窗口会自然盖住桌面便签；窗口移开后，便签仍留在桌面上。
 - 如果便签位置不方便，可从应用菜单选择“找回桌面便签”，或按 Command+R。
 
-数据保存在：
+Data is stored locally at:
 
-`~/Library/Application Support/MotivationNote/data.json`
+```text
+~/Library/Application Support/MotivationNote/data.json
+```
+
+## Contributing
+
+Issues and pull requests are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for
+the development workflow and [SECURITY.md](SECURITY.md) for reporting security
+problems.
+
+## License
+
+MIT © 2026 MotivationNote contributors.

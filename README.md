@@ -1,6 +1,6 @@
 # MotivationNote · 激励便签
 
-A private, offline-first motivational note for the macOS desktop. Save quotes,
+An offline-first motivational note for the macOS desktop. Save quotes,
 choose what you want to see today, reorder them, and customize the paper — with
 no account, analytics, or network access.
 
@@ -28,7 +28,7 @@ written atomically.
 Requirements: macOS 14 or later, Xcode 16 or a Swift 6 toolchain.
 
 ```bash
-git clone https://github.com/nuonuostyjo-design/MotivationNote.git
+git clone https://github.com/Zomo-Design/MotivationNote.git
 cd MotivationNote
 ./scripts/run-checks.sh
 ./scripts/build-app.sh
@@ -60,6 +60,8 @@ Data is stored locally at:
 Issues and pull requests are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for
 the development workflow and [SECURITY.md](SECURITY.md) for reporting security
 problems.
+
+The original product specifications are available in [docs/design](docs/design/).
 
 ## License
 

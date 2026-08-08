@@ -7,7 +7,7 @@ Thanks for helping improve MotivationNote.
 You need macOS 14 or later and a Swift 6 toolchain.
 
 ```bash
-git clone https://github.com/nuonuostyjo-design/MotivationNote.git
+git clone https://github.com/Zomo-Design/MotivationNote.git
 cd MotivationNote
 ./scripts/run-checks.sh
 swift build
